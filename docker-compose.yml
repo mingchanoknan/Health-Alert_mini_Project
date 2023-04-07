@@ -20,7 +20,9 @@ services:
       # Where our data will be persisted
     volumes:
       - my-db:/var/lib/mysql
-    command: ['mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci']
+    command: 
+        --character-set-server=utf8mb4
+        ----collation-server=utf8mb4_unicode_ci
 
   backend:
     build: ./backend
