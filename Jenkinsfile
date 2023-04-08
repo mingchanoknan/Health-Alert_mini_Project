@@ -4,9 +4,9 @@
     stage('verify') {
         steps {
             sh '''
-                sudo docker info
-                sudo docker version
-                sudo docker compose version
+                docker info
+                docker version
+                docker compose version
                 curl --version
             '''
         }
