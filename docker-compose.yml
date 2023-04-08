@@ -2,6 +2,7 @@ version: '3.3'
 services:
   db:
     image: mysql
+    image: mingchanoknan/mysql-pjdevtool:lastest
     command:
       --character-set-server=utf8mb4
       --collation-server=utf8mb4_unicode_ci
@@ -19,6 +20,7 @@ services:
       timeout: 10s
 
   backend:
+    image: mingchanoknan/backend-express-pjdevtool:lastest
     build: ./backend
     command: npm run start
     ports:

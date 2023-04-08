@@ -39,7 +39,7 @@
     }
     stage('docker run image') {
         steps {
-            dir('HW_devtool_w10') {
+            dir('Health-Alert_mini_Project') {
                 sh "docker-compose up -d" 
             }
         }
