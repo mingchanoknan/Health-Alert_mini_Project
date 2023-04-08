@@ -1,7 +1,6 @@
 version: '3.3'
 services:
   db:
-    image: mysql
     image: mingchanoknan/mysql-pjdevtool:lastest
     command:
       --character-set-server=utf8mb4
