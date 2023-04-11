@@ -4,62 +4,62 @@ import { TouchableOpacity, StyleSheet, View, Image } from "react-native";
 
 const BoxListDrugs = (item) => {
   const [img, seItmg] = useState(item.item.medicine_image);
-  const [morning_time, setMorning_Time] = useState(item.item.morning_time);
-  const [noon_time, setNoon_Time] = useState(item.item.noon_time);
-  const [evening_time, setEvening_Time] = useState(item.item.evening_time);
-  const [night_time, setNight_Time] = useState(item.item.night_time);
+  // const [morning_time, setMorning_Time] = useState(item.item.morning_time);
+  // const [noon_time, setNoon_Time] = useState(item.item.noon_time);
+  // const [evening_time, setEvening_Time] = useState(item.item.evening_time);
+  // const [night_time, setNight_Time] = useState(item.item.night_time);
   const [medicine, setMedicine] = useState(item.item.medicine_name);
   const [amount, setAmount] = useState(item.item.amount_per_time);
   const [period, setPeriod] = useState(item.item.period);
-  const [time, setTime] = useState(null);
+  const [time, setTime] = useState(item.item.time);
   const [now, setNow] = useState(false);
   const [show, setShow] = useState(false);
   const [timePeriod, setTimePeriod] = useState("");
   let date = new Date();
   let timeNow = date.toTimeString();
-  console.log("now" + timeNow.slice(0, 5));
-  console.log("time_morning" + morning_time);
-  console.log("time_nooning" + noon_time);
+  // console.log("now" + timeNow.slice(0, 5));
+  // console.log("time_morning" + morning_time);
+  // console.log("time_nooning" + noon_time);
  
   //เช้า 5-10
   //กลางวัน 11-15
   //เย็น 16-20
   //ก่อน 21:00-04
-  console.log('check----')
-  useEffect(() => {
-    if (Number.parseInt(timeNow.slice(0, 2)) >= 4 && Number.parseInt(timeNow.slice(0, 2)) <= 10){
-      setTimePeriod('morning');
-    } else if (Number.parseInt(timeNow.slice(0, 2)) >= 11 && Number.parseInt(timeNow.slice(0, 2)) <= 16){
-      setTimePeriod('noon');
-    } else if (Number.parseInt(timeNow.slice(0, 2)) >= 16 && Number.parseInt(timeNow.slice(0, 2)) <= 20){
-      setTimePeriod('evening');
-    } else if ((Number.parseInt(timeNow.slice(0, 2)) >= 21 && Number.parseInt(timeNow.slice(0, 2)) <= 23) ||(Number.parseInt(timeNow.slice(0,2)) >= 0 && Number.parseInt(timeNow.slice(0,2)) <= 3)){
-      setTimePeriod('night');
-    }  else {
-      setTimePeriod('morning');
-    }
-  }, []);
+  // console.log('check----')
+  // useEffect(() => {
+  //   if (Number.parseInt(timeNow.slice(0, 2)) >= 4 && Number.parseInt(timeNow.slice(0, 2)) <= 10){
+  //     setTimePeriod('morning');
+  //   } else if (Number.parseInt(timeNow.slice(0, 2)) >= 11 && Number.parseInt(timeNow.slice(0, 2)) <= 16){
+  //     setTimePeriod('noon');
+  //   } else if (Number.parseInt(timeNow.slice(0, 2)) >= 16 && Number.parseInt(timeNow.slice(0, 2)) <= 20){
+  //     setTimePeriod('evening');
+  //   } else if ((Number.parseInt(timeNow.slice(0, 2)) >= 21 && Number.parseInt(timeNow.slice(0, 2)) <= 23) ||(Number.parseInt(timeNow.slice(0,2)) >= 0 && Number.parseInt(timeNow.slice(0,2)) <= 3)){
+  //     setTimePeriod('night');
+  //   }  else {
+  //     setTimePeriod('morning');
+  //   }
+  // }, []);
   
-  useEffect(() => {
-    console.log(timePeriod +' time');
-    if(timePeriod == "morning"){
-      setNow(true);
-      setTime(morning_time);
-    }else if(timePeriod == "noon"){
-      setNow(true);
-      setTime(noon_time);
-    }else if(timePeriod == "evening"){
-      setNow(true);
-      setTime(evening_time);
-    }else{
-      setNow(true);
-      setTime(night_time);
-    }
-  }, [timePeriod]);
+  // useEffect(() => {
+  //   console.log(timePeriod +' time');
+  //   if(timePeriod == "morning"){
+  //     setNow(true);
+  //     setTime(morning_time);
+  //   }else if(timePeriod == "noon"){
+  //     setNow(true);
+  //     setTime(noon_time);
+  //   }else if(timePeriod == "evening"){
+  //     setNow(true);
+  //     setTime(evening_time);
+  //   }else{
+  //     setNow(true);
+  //     setTime(night_time);
+  //   }
+  // }, [timePeriod]);
 
   return (
     <>
-      {now && time != null && (
+      {time != null && (
         <Card style={styles.card}>
           <Card.Content style={{ flexDirection: "row" }}>
             <Card.Cover
@@ -90,7 +90,7 @@ const BoxListDrugs = (item) => {
             </Card.Content>
           </Card.Content>
         </Card>
-      )}
+       )} 
     </>
   );
 };

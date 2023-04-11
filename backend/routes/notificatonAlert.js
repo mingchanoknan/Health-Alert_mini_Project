@@ -59,4 +59,59 @@ router.get('/getMedicineToEat/:id', async (req, res, next) => {
     
 })
 
+router.get('/timeToEatMedicineComing/:id', async (req, res, next) => {
+    const conn = await pool.getConnection();
+    const id = req.params.id
+    const today = new Date()
+  
+    let time_start = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+    let hours = parseInt(today.getHours()) 
+    time_start = "12:00:00"
+    hours = 12
+    // let checkPeriodTime = () => {
+    //     if (hours > 3 && hours < 11) {
+    //         return "morning_time"
+    //     }
+    //     else if (hours > 11 && hours < 16){
+    //         return "noon_time"
+    //     }
+    //     else if (hours > 16 && hours < 21){
+    //         return "evening_time"
+    //     }
+    //     else {
+    //         return "nitght_time"
+    //     }
+
+    // }
+    let checkPeriodTime =""
+    if (hours > 3 && hours < 11) {
+                checkPeriodTime = "morning_time"
+            }
+            else if (hours > 11 && hours < 16){
+                checkPeriodTime = "noon_time"
+            }
+            else if (hours > 16 && hours < 21){
+                checkPeriodTime = "evening_time"
+            }
+            else {
+                checkPeriodTime = "nitght_time"
+            }
+    
+    try {
+        const [row, field] = await conn.query(
+            `SELECT ${checkPeriodTime} AS time,medicine_id, medicine_name,amount_per_time,medicine_image,treatment,number_of_times_per_day,period 
+            FROM Reminder JOIN Medicine USING (medicine_id)
+            WHERE patient_id = ? AND (morning_time BETWEEN '${time_start}' AND '23:59:59' OR noon_time BETWEEN '${time_start}' AND '23:59:59' OR evening_time BETWEEN '${time_start}' AND '23:59:59' OR night_time BETWEEN '${time_start}' AND '23:59:59')
+            ORDER BY ${checkPeriodTime}`
+            , [id])
+        
+        res.send(row).status(200)
+    }catch (err) {
+        console.log(err)
+        res.status(404).json(err.message)
+    } finally {
+        conn.release()
+    }
+})
+
 exports.router = router;

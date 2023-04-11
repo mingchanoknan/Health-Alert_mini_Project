@@ -21,7 +21,7 @@ const CheckInfo = ({ navigation }) => {
 
   const onConfirmInfo = async (event) => {
     try {
-      const result = await axios.get(`http://54.163.234.235:3000/getPatient/${idcard}`);
+      const result = await axios.get(`${baseUrl}/getPatient/${idcard}`);
       if (result.status === 200) {
         navigation.dispatch(StackActions.replace("Home", { name : name, id : id }));
       } else {

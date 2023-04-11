@@ -112,7 +112,7 @@ const Alarm = ({navigation}) => {
           />
       <TouchableOpacity style={{ backgroundColor: '#EC910A', alignItems: 'center', padding: 10, width: "50%", borderRadius: "100%", alignSelf: "center", marginBottom: 10 }}
         onPress={() => {
-        navigation.navigate("Home")
+        navigation.navigate("Home",{name:'test',id:'2'} )
       }}>
               <Text style={{color:"#FFFFFF"}} category="h5">ทานยาเรียบร้อย</Text>
           </TouchableOpacity>

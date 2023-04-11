@@ -106,7 +106,7 @@ const AppNavigation = () => {
 
     return (
         <AppNavigator.Navigator
-            initialRouteName='notificaton'
+            initialRouteName='CheckInfo'
             screenOptions={({ route, navigation }) => {
                 return {
                     headerShown: false,
@@ -115,7 +115,7 @@ const AppNavigation = () => {
             <AppNavigator.Screen name="CheckInfo" component={CheckInfo}/>
                 <AppNavigator.Screen name="Home" component={Home} />
                 <AppNavigator.Screen name="Medicine" component={MyBottomTab} />
-                <AppNavigator.Screen name="notificaton" component={NotificationAlarm} />
+                {/* <AppNavigator.Screen name="notificaton" component={NotificationAlarm} /> */}
                 <AppNavigator.Screen name="alarm" component={ Alarm } />
             </AppNavigator.Navigator>
     )

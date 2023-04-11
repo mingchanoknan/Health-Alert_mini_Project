@@ -29,7 +29,7 @@ const Medicine = ({ route, navigation }) => {
     const fetchUsers = async () => {
       try {
         // console.log('test');
-          let response = await axios.get("http://54.163.234.235:3000/getListDrugs")
+          let response = await axios.get(`${baseUrl}/getListDrugs`)
           setUser(response.data);
           setAll(response.data);
           // console.log(response.data)
