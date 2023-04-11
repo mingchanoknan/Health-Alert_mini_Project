@@ -2,7 +2,6 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import { NavigationContainer } from "@react-navigation/native";
 import CheckInfo from "./app/screen/checkInfo";
-import LoginNavigation  from './app/navigation/LoginNavigation';
 import Home from "./app/screen/menu";
 import AppNavigation from './app/navigation/AppNavigation';
 import { ApplicationProvider, Layout } from '@ui-kitten/components';

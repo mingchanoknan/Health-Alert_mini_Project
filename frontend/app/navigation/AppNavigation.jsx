@@ -7,6 +7,7 @@ const AppNavigation = () => {
     const AppNavigator = createNativeStackNavigator();
     return (
         <AppNavigator.Navigator
+            initialRouteName='notificaton'
             screenOptions={({ route, navigation }) => {
                 return {
                     headerShown: false,
@@ -15,7 +16,7 @@ const AppNavigation = () => {
             <AppNavigator.Screen name="CheckInfo" component={CheckInfo}/>
                 <AppNavigator.Screen name="Home" component={Home} />
                 <AppNavigator.Screen name="notificaton" component={NotificationAlarm} />
-                <AppNavigator.Screen name="test" component={ Alarm } />
+                <AppNavigator.Screen name="alarm" component={ Alarm } />
             </AppNavigator.Navigator>
     )
 }

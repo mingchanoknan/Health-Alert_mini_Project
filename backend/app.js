@@ -1,9 +1,9 @@
 const express = require('express');
-const connection = require('./config');
+const connection = require('./config/config');
 
 const app = express();
 const port = 3000
-
+const notiAlertRouter = require("./routes/notificatonAlert.js")
 
 app.use(express.json());
 app.use(
@@ -11,13 +11,14 @@ app.use(
     extended: true,
   })
 );
-
+app.use(notiAlertRouter.router)
 app.get('/', (req, res) => {
   res.send('Hello World! test')
 })
 
 app.get('/getPatient/:id', function (req, res, next) {
   // const id = req.params.id;
+  
   connection.query(
     'SELECT * FROM `Patients` WHERE `id_card` = ?',
     [req.params.id],
@@ -75,6 +76,7 @@ app.get('/getListDrugs/:id', function (req, res, next) {
     }
   );
 })
+
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
