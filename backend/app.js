@@ -16,6 +16,22 @@ app.get('/', (req, res) => {
   res.send('Hello World! test')
 })
 
+app.get('/getPatient', function (req, res, next) {
+  // const id = req.params.id;
+  connection.query(
+    'SELECT * FROM `Patients`',
+    function(err, results) {
+      if (err) {
+        console.error(err);
+        res.status(500).send('Error retrieving user from database');
+      } else {
+        console.log('User retrieved from database');
+        res.status(200).send(results[0]);
+      }
+    }
+  );
+})
+
 app.get('/getPatient/:id', function (req, res, next) {
   // const id = req.params.id;
   connection.query(
@@ -32,18 +48,6 @@ app.get('/getPatient/:id', function (req, res, next) {
     }
   );
 })
-
-// app.get('/getListDrugs', (req, res) => {
-//   connection.query('SELECT * FROM `Medicine`', (error, results, fields) => { 
-//     if(error){
-//       console.error('error query:', error);
-//       res.send('Error :', error);
-//     } else {
-//       res.json(results);
-//       console.log(results);
-//     }
-//   })
-// })
 
 app.get('/getListDrugs', (req, res) => {
   console.log("axios");
@@ -75,6 +79,48 @@ app.get('/getListDrugs/:id', function (req, res, next) {
     }
   );
 })
+
+app.get('/getRemider/:id', function (req, res, next) {
+  // const id = req.params.id;
+  let date = new Date();
+  let time = date.toTimeString();
+  console.log(time.slice(0, 8));
+  connection.query(
+    'SELECT * FROM `Reminder` JOIN `Medicine` ON `Reminder`.medicine_id = `Medicine`.medicine_id JOIN  `Patients` ON  `Patients`.patient_id =  `Patients`.patient_id  WHERE `Patients`.patient_id = ?',
+    [req.params.id],
+    function(err, results) {
+      if (err) {
+        console.error(err);
+        res.status(500).send('Error retrieving user from database');
+      } else {
+        console.log('User retrieved from database');
+        res.status(200).send(results[0]);
+      }
+    }
+  );
+})
+
+app.get('/getRemider', function (req, res, next) {
+  // const id = req.params.id;
+  let date = new Date();
+  let time = date.toTimeString();
+  console.log(time.slice(0, 8));
+  connection.query(
+    'SELECT * FROM `Reminder`',
+
+    function(err, results) {
+      if (err) {
+        console.error(err);
+        res.status(500).send('Error retrieving user from database');
+      } else {
+        console.log('User retrieved from database');
+        res.status(200).send(results[0]);
+      }
+    }
+  );
+})
+
+
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)

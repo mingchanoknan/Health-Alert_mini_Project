@@ -1,69 +1,48 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { StatusBar } from "expo-status-bar";
 import {
   StyleSheet,
   Text,
   View,
-  TextInput,
   TouchableOpacity,
   Image,
   ScrollView,
   FlatList,
-  ActivityIndicator
+  ActivityIndicator,
 } from "react-native";
 import BoxListDrugs from "../component/BoxListDrugs";
-import { Avatar, Button, Card, Title, Paragraph } from "react-native-paper";
-import { useFocusEffect } from "@react-navigation/native";
+import { REMINDER } from "../dummy/Reminder";
 import { baseUrl } from "@env";
 import axios from "axios";
 
-const Home = ({ navigation }) => {
-  const [user, setUser] = useState(null);
+const Home = ({ route, navigation }) => {
+  const { name, id } = route.params;
+  // console.log(name);
+  const [user, setUser] = useState(REMINDER);
+  // console.log(user);
   const [loading, setLoading] = useState(true);
-
 
   useEffect(() => {
     const url = `https://example.com/api/data`;
 
     const fetchUsers = async () => {
-      // try {
-      //   console.log(url);
-      //   const response = await axios.get(url);
-      //   if (response.status === 200) {
-      //     // setUser(response.data);
-      //     console.log("success");
-      //     console.log(response.data);
-      //     return;
-      //   } else {
-      //     throw new Error("Failed to fetch users drugs");
-      //   }
-      // } catch (error) {
-      //   console.log("Data fetching cancelled drugs");
-      // }
-      // console.log("the end");
-       
-        try {
-          console.log('test');
-            let response = await axios.get("http://172.20.10.6:3000/getListDrugs/2")
-            console.log(response.data)
-        }
-        catch(error) {
-          console.log('error');
-          console.error(error)
-        }
-    
+      try {
+        // console.log('test');
+          let response = await axios.get(`http://54.163.234.235:3000/getRemider/${id}`)
+          setUser(response.data);
+          // console.log(response.data)
+      }
+      catch(error) {
+        console.log('error');
+        console.error(error)
+      }
     };
     fetchUsers();
   }, []);
 
-  const renderGridItem = ({ itemData }) => {
-    // console.log(itemData);
-    return <BoxListDrugs item={itemData} width={"85%"} numberOfLines={1} />;
+  const renderGridItem = ({ item }) => {
+    // console.log("test ");
+    return <BoxListDrugs item={item} numberOfLines={1} />;
   };
-
-  // if (loading) {
-  //   return <ActivityIndicator />;
-  // }
 
   return (
     <View style={{ flex: 1, backgroundColor: "white" }}>
@@ -90,7 +69,7 @@ const Home = ({ navigation }) => {
           }}
         >
           {" "}
-          นายสมชาย เกียรติดี{" "}
+          {name}{" "}
         </Text>
       </View>
 
@@ -113,7 +92,10 @@ const Home = ({ navigation }) => {
             // backgroundColor:'pink',
           }}
         >
-          <TouchableOpacity style={styles.box}>
+          <TouchableOpacity
+            style={styles.box}
+            onPress={() => navigation.navigate("Medicine")}
+          >
             <Image
               source={require("../../assets/drugs.png")}
               style={{ width: "30%", height: "40%" }}
@@ -151,7 +133,6 @@ const Home = ({ navigation }) => {
             paddingLeft: 10,
             paddingRight: 10,
             top: "-10%",
-            // backgroundColor:'green',
           }}
         >
           <TouchableOpacity style={styles.box}>
@@ -186,9 +167,6 @@ const Home = ({ navigation }) => {
         </View>
       </View>
 
-      {/* <View style={{backgroundColor: 'red', flex:1, position: "absolute", zIndex: -20 }}>
-
-      </View>  */}
       <View
         style={{
           backgroundColor: "white",
@@ -210,20 +188,18 @@ const Home = ({ navigation }) => {
           {" "}
           รายการแจ้งเตือนที่ใกล้จะถึง..{" "}
         </Text>
-        {/* <ScrollView style={{ flex: 1 }}>
-      
-      </ScrollView> */}
         <View style={{ flex: 3 }}>
-          <Text>Hello</Text>
-          {/* <ActivityIndicator /> */}
+        { user != null && (
           <FlatList
             data={user}
             renderItem={renderGridItem}
             numColumns={1}
-            keyExtractor={(item) => item.medicine_id}
-            navigation={navigation}
+            keyExtractor={(item) => item.reminder_id}
           />
-          <Text>Hello2</Text>
+        )}
+        { user == null && ( 
+          <Text style={{fontWeight: 'bold', textAlign: 'center', color:'gray'}}>- ไม่มีรายการยา -</Text>
+        )}
         </View>
       </View>
     </View>
