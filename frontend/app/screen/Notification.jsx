@@ -1,7 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import * as Notifications from 'expo-notifications';
 import { View } from "react-native";
 import * as Permissions from 'expo-permissions';
+import axios from "axios";
+import { baseUrl } from "@env";
+
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
@@ -12,55 +15,57 @@ Notifications.setNotificationHandler({
 
 const NotificationAlarm = ({navigation}) => {
 
-  async function requestNotificationPermission() {
-    const { status } = await Notifications.requestPermissionsAsync(Permissions.NOTIFICATIONS)
-    if (status != 'granted') {
+  const requestNotificationPermission = async (hhmmss) => {
+    const { status } = await Notifications.requestPermissionsAsync(Permissions.NOTIFICATIONS);
+    if (status === 'granted') {
+      try {
+        await Notifications.scheduleNotificationAsync({
+        content: {
+          title: 'Alarm',
+          body: 'Wake up!',
+        },
+          trigger:null
+        //   {
+        //   date: new Date().setHours(parseInt(hhmmss[0]), parseInt(hhmmss[1]), parseInt(hhmmss[2]))
+        // },
+        });
+      }
+      catch (err) {
+        console.log(err)
+      }
+      
+      Notifications.addNotificationResponseReceivedListener(handleNotificationClick);
+    } else {
       alert('You need to grant permission to receive notifications');
     }
-    else {
-      scheduleAlarm()
-    }
-  }
-  function addSeconds(date, seconds) {
-    date.setSeconds(date.getSeconds() + seconds);
-    return date;
-  }
-  const schedulingOptions = {
-    date: new Date().setHours(0, 49, 0)
-
-    // seconds: 2
   };
 
   const handleNotificationClick = (notification) => {
-    // ดึง screen ที่กำหนดใน notification
-    // const screen = notification.request.content.data.screen;
-    // console.log("screen "+ screen)
-    // // เปิดหน้าที่ต้องการตาม screen ที่กำหนด
-    navigation.navigate("test");
-  }
+    navigation.navigate("alarm");
+  };
   
   useEffect(() => {
-    requestNotificationPermission()
-    }, [])
-    async function scheduleAlarm() {
-        
-        await Notifications.scheduleNotificationAsync({
-          content: {
-            title: 'Alarm',
-            body: 'Wake up!',
-            sound: 'sound.wav',
-          },
-          trigger: schedulingOptions,
-
-        
-        });
-      // console.log("alarm")
-        // Notifications.addNotificationResponseReceivedListener(handleNotificationClick);
-  }
-  Notifications.addNotificationResponseReceivedListener(handleNotificationClick);
-    return (
-        <View/>
-    )
-}
+    const getTimeForAlert = async () => {
+      const id = 3;
+      let promises =""
+      const response = await axios.get(`${baseUrl}/getEdableTimebyId/${id}`);
+      if (response.data.length){
+        const hhmmssValues = response.data.map(x => x.split(":"));
+        promises = hhmmssValues.map(hhmmss => requestNotificationPermission(hhmmss));
+      }
+      requestNotificationPermission("14:49:0")
+      if (promises != "") {
+        await Promise.all(promises);
+      }
+      
+    };
+    getTimeForAlert();
+    
+  }, []);
+  
+  return (
+    <View/>
+  );
+};
 
 export default NotificationAlarm;

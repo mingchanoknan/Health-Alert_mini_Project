@@ -1,43 +1,76 @@
 import { StyleSheet, View, Image, FlatList, Button, TouchableOpacity } from "react-native";
 import { Text, Layout } from "@ui-kitten/components";
+import { useCallback, useState } from "react";
+import { useFocusEffect } from "@react-navigation/native";
+import axios from "axios";
+import { baseUrl } from "@env";
 
-const Alarm = () => {
-  const DATA = [
-    {
-      id: "bd7acbea-c1b1-46c2-aed5-3ad53abb28ba",
-      title: "First Item",
-    },
-    {
-      id: "3ac68afc-c605-48d3-a4f8-fbd91aa97f63",
-      title: "Second Item",
-    },
-    {
-      id: "58694a0f-3da1-471f-bd96-145571e29d72",
-      title: "Third Item",
-    },
-  ];
-  const Item = ({ title }) => (
-    // <View style={styles.item}>
-    //   <Text style={styles.title}>{title}</Text>
-    // </View>
-    <View style={{ flexDirection: "row", marginTop: 10 }}>
+const Alarm = ({navigation}) => {
+  const [dataMedicine, setDataMedicine] = useState();
+  const [currentTime, setCurrentTime] = useState();
+  useFocusEffect(
+    useCallback(() => {
+      const getMedicine = async () => {
+        const id = 2
+        const response = await axios.get(`${baseUrl}/getMedicineToEat/${id}`)
+        setDataMedicine(response.data)
+        // console.log(response.data)
+      }
+      getMedicine();
+      const time = new Date()
+      let time_hhmm = time.getHours() + ":" + time.getMinutes();
+      setCurrentTime(time_hhmm)
+    },[])
+
+  )
+
+  const Item = ({medicine}) => (
+
+    <View style={{ flexDirection: "row", marginTop: 10,marginLeft:20,position: 'relative'}}>
       <Image
         style={{ width: 150, height: 150, borderRadius: 150/2 }}
         source={{
-          uri: "https://media.discordapp.net/attachments/1090253725647523921/1093960018778402917/anticoagulant-and-antiplatelet-drugs_thumb-1-732x549.png?width=582&height=436",
+          uri: medicine.medicine_image,
         }}
       />
+      <View style={{justifyContent:"center"}}>
       <Text
+        style={{
+          color: "rgba(255, 255, 255, 0.8)",
+            marginLeft: 10,
+        }}
+        category="h5">
+        {medicine.medicine_name}
+      </Text>
+      <Text
+      style={{
+        color: "rgba(255, 255, 255, 0.8)",
+            marginLeft: 10,
+      }}
+      category="h5">
+      {medicine.amount_per_time} เม็ด
+      </Text>
+      </View>
+      {/* <Text
         style={{
           color: "rgba(255, 255, 255, 0.8)",
           alignSelf: "center",
           marginLeft: 15,
         }}
-        category="h4"
-      >
-        {title}
+        category="h5">
+        {medicine.medicine_name}
       </Text>
-    </View>
+      <Text
+      style={{
+        color: "rgba(255, 255, 255, 0.8)",
+        alignSelf: "center",
+        marginLeft: 15,
+          flex: 1,
+      }}
+      category="h5">
+      {medicine.amount_per_time} เม็ด
+      </Text> */}
+     </View>
   );
 
   return (
@@ -50,7 +83,7 @@ const Alarm = () => {
         }}
         category="h1"
       >
-        13:00
+        {currentTime}
       </Text>
       <Text
         style={{
@@ -72,19 +105,15 @@ const Alarm = () => {
       >
         ยาที่ต้องทาน ณ ตอนนี้
       </Text>
-      {/* <View style={{ flexDirection: 'row',marginTop:10}}>
-                <Image style={{width:150,height:150, borderRadius:'100%'}} source={{
-                    uri: 'https://media.discordapp.net/attachments/1090253725647523921/1093960018778402917/anticoagulant-and-antiplatelet-drugs_thumb-1-732x549.png?width=582&height=436',
-                }} />
-                <Text style={{ color: 'rgba(255, 255, 255, 0.8)',alignSelf: 'center', marginLeft: 15}} category='h4'>123</Text>
-            </View> */}
-
       <FlatList
-        data={DATA}
-        renderItem={({ item }) => <Item title={item.title} />}
-        keyExtractor={(item) => item.id}
+        data={dataMedicine}
+        renderItem={({ item }) => <Item medicine={item} />}
+        keyExtractor={(item) => item.medicine_id}
           />
-          <TouchableOpacity style={{ backgroundColor: '#EC910A', alignItems: 'center',padding:10,width:"50%",borderRadius:"100%",alignSelf:"center",marginBottom:10}}>
+      <TouchableOpacity style={{ backgroundColor: '#EC910A', alignItems: 'center', padding: 10, width: "50%", borderRadius: "100%", alignSelf: "center", marginBottom: 10 }}
+        onPress={() => {
+        navigation.navigate("Home")
+      }}>
               <Text style={{color:"#FFFFFF"}} category="h5">ทานยาเรียบร้อย</Text>
           </TouchableOpacity>
           <TouchableOpacity style={{ backgroundColor: '#373736', alignItems: 'center',padding:10,width:"30%",borderRadius:"100%",alignSelf:"center",marginBottom:20}}>
