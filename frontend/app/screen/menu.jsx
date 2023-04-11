@@ -15,7 +15,7 @@ import { baseUrl } from "@env";
 import axios from "axios";
 
 const Home = ({ route, navigation }) => {
-  const { name, id } = route.params;
+  const { name, idcard } = route.params;
   // console.log(name);
   const [user, setUser] = useState(REMINDER);
   // console.log(user);
@@ -27,7 +27,7 @@ const Home = ({ route, navigation }) => {
     const fetchUsers = async () => {
       try {
         // console.log('test');
-          let response = await axios.get(`http://54.163.234.235:3000/getRemider/${id}`)
+          let response = await axios.get(`http://54.163.234.235:3000/getRemider/${idcard}`)
           setUser(response.data);
           // console.log(response.data)
       }

@@ -21,15 +21,15 @@ const BoxListDrugs = (item) => {
   console.log("time_morning" + morning_time);
   console.log("time_nooning" + noon_time);
  
-  //เช้า 5-10
+  //เช้า 4-10
   //กลางวัน 11-15
   //เย็น 16-20
-  //ก่อน 21:00-04
+  //ก่อน 21:00-03
   console.log('check----')
   useEffect(() => {
     if (Number.parseInt(timeNow.slice(0, 2)) >= 4 && Number.parseInt(timeNow.slice(0, 2)) <= 10){
       setTimePeriod('morning');
-    } else if (Number.parseInt(timeNow.slice(0, 2)) >= 11 && Number.parseInt(timeNow.slice(0, 2)) <= 16){
+    } else if (Number.parseInt(timeNow.slice(0, 2)) >= 11 && Number.parseInt(timeNow.slice(0, 2)) <= 15){
       setTimePeriod('noon');
     } else if (Number.parseInt(timeNow.slice(0, 2)) >= 16 && Number.parseInt(timeNow.slice(0, 2)) <= 20){
       setTimePeriod('evening');

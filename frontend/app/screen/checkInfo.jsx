@@ -12,20 +12,31 @@ import { baseUrl } from "@env";
 import axios from "axios";
 import { PATIENT } from "../dummy/Patient";
 
-const CheckInfo = ({ navigation }) => {
+const CheckInfo = ({ route, navigation }) => {
+  const { data } = route.params;
   const [idcard, setIdcard] = useState("1711000121111");
   const [name, setName] = useState("นางสาวอาภัสรา โมรัษเฐียร");
   const [id, setId] = useState(1);
   const [birthdate, setBirthDate] = useState("");
   const [address, setAddress] = useState("");
 
+  useEffect(() => {
+    setIdcard(data.data.Identification_Number);
+    setName(data.data.FullNameTH);
+    setBirthDate(data.data.BirthdayTH);
+    setAddress(data.data.Address);
+  }, []);
   const onConfirmInfo = async (event) => {
     try {
-      const result = await axios.get(`http://54.163.234.235:3000/getPatient/${idcard}`);
+      const result = await axios.get(
+        `http://54.163.234.235:3000/getPatient/${idcard}`
+      );
       if (result.status === 200) {
-        navigation.dispatch(StackActions.replace("Home", { name : name, id : id }));
+        navigation.dispatch(
+          StackActions.replace("Home", { name: name, id: idcard })
+        );
       } else {
-        alert("ไม่พบบัญชีผู้ใช้งาน")
+        alert("ไม่พบบัญชีผู้ใช้งาน");
       }
     } catch (error) {
       console.log(error);
