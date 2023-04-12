@@ -1,8 +1,5 @@
   pipeline {
    agent any
-   environment {
-        DOCKER_CREDS = credentials('DOCKER_CREDS')
-   }
    stages {
     // stage('verify') {
     //     steps {
@@ -24,7 +21,7 @@
     stage('login docker') {
         steps {
             script {
-                sh 'docker login -u mingchanoknan -p $DOCKER_CREDS'
+                sh 'docker login -u mingchanoknan -p dckr_pat_oK9mimodZdOjDTDFAesL4lDfNtQ'
             }
         }
     }
