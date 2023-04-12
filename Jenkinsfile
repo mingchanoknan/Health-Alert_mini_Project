@@ -21,7 +21,7 @@
     stage('login docker') {
         steps {
             script {
-                sh 'docker login -u mingchanoknan -p dckr_pat__3L3A77YUXnCVZTqW2Ls1pWsNME'
+                sh 'docker login -u mingchanoknan -p dckr_pat_oK9mimodZdOjDTDFAesL4lDfNtQ'
             }
         }
     }
