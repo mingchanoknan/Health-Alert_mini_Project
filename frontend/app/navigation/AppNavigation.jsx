@@ -110,6 +110,8 @@ const AppNavigation = () => {
     );
   };
 
+  
+
   return (
     <AppNavigator.Navigator
       initialRouteName="Scan"

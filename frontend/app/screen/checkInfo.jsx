@@ -74,32 +74,27 @@ const CheckInfo = ({ route, navigation }) => {
       </Text>
 
       <Text style={styles.txt}>เลขบัตรประชาชน</Text>
-      <TextInput onChangeText={onChangeIDcardHandler} style={styles.textInput}>
-        {" "}
-        {idcard}{" "}
+      <TextInput value={idcard} onChangeText={onChangeIDcardHandler} style={styles.textInput}>
+        
       </TextInput>
 
       <Text style={styles.txt}>ชื่อ-นามสกุล</Text>
-      <TextInput onChangeText={onChangeNameHandler} style={styles.textInput}>
-        {name}
+      <TextInput value={name} onChangeText={onChangeNameHandler} style={styles.textInput}>
+        
       </TextInput>
 
       <Text style={styles.txt}>วัน-เดือน-ปีเกิด</Text>
-      <TextInput
+      <TextInput value={birthdate}
         onChangeText={onChangeBirthDateHandler}
         style={styles.textInput}
       >
-        {" "}
-        {birthdate}
       </TextInput>
 
       <Text style={styles.txt}>ที่อยู่</Text>
-      <TextInput
+      <TextInput value={address}
         onChangeText={onChangeAddressHandler}
         style={[styles.textInput, { height: "20%", borderRadius: 20 }]}
       >
-        {" "}
-        {address}{" "}
       </TextInput>
 
       <TouchableOpacity style={styles.btnCheck} onPress={onConfirmInfo}>
