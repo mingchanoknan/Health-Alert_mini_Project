@@ -41,8 +41,8 @@ router.get('/getMedicineToEat/:id', async (req, res, next) => {
         let today_delsec = new Date(Date.now() - 60 * 1000)
         let time_end = today_addsec.getHours() + ":" + today_addsec.getMinutes() + ":" + today_addsec.getSeconds();
         let time_start = today_delsec.getHours() + ":" + today_delsec.getMinutes() + ":" + today_delsec.getSeconds();
-        time_end = "13:32:0"
-        time_start="13:29:0"
+        // time_end = "13:32:0"
+        // time_start="13:29:0"
         
         const [row, field] = await conn.query(
             `SELECT medicine_id, medicine_name,amount_per_time,medicine_image FROM Reminder JOIN Medicine USING (medicine_id) 
@@ -66,8 +66,8 @@ router.get('/timeToEatMedicineComing/:id', async (req, res, next) => {
   
     let time_start = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
     let hours = parseInt(today.getHours()) 
-    time_start = "12:00:00"
-    hours = 12
+    // time_start = "12:00:00"
+    // hours = 12
     // let checkPeriodTime = () => {
     //     if (hours > 3 && hours < 11) {
     //         return "morning_time"
@@ -81,7 +81,6 @@ router.get('/timeToEatMedicineComing/:id', async (req, res, next) => {
     //     else {
     //         return "nitght_time"
     //     }
-
     // }
     let checkPeriodTime =""
     if (hours > 3 && hours < 11) {
@@ -94,7 +93,7 @@ router.get('/timeToEatMedicineComing/:id', async (req, res, next) => {
                 checkPeriodTime = "evening_time"
             }
             else {
-                checkPeriodTime = "nitght_time"
+                checkPeriodTime = "night_time"
             }
     
     try {

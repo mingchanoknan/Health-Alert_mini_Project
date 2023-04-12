@@ -30,12 +30,13 @@ const Medicine = ({ route, navigation }) => {
   const [searchPhrase, setSearchPhrase] = useState("");
   const [clicked, setClicked] = useState(false);
   const logout = useNavigation();
-  const handlePress = () => {
+  const handlePress = async() => {
     logout.reset({
       index: 0,
       routes: [{ name: "Scan" }],
     });
-    // alert("success")
+    await removeData()
+    console.log("remove")
   };
 
   const getData = async () => {
@@ -54,7 +55,14 @@ const Medicine = ({ route, navigation }) => {
       console.log(e)
     }
   }
-  
+  const removeData = async() => {
+    try {
+      await AsyncStorage.removeItem('@storage_Key');
+      console.log( getData())
+    } catch (error) {
+      console.log('Error removing data: ', error);
+    }
+  }
   useEffect(() => {
     const fetchUsers = async () => {
       try {

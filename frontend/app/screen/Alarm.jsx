@@ -1,4 +1,4 @@
-import { StyleSheet, View, Image, FlatList, Button, TouchableOpacity } from "react-native";
+import { StyleSheet, View, Image, FlatList, Button, TouchableOpacity,Alert } from "react-native";
 import { Text, Layout } from "@ui-kitten/components";
 import { useCallback, useState } from "react";
 import { useFocusEffect } from "@react-navigation/native";
@@ -13,10 +13,20 @@ const Alarm = ({navigation}) => {
   useFocusEffect(
     useCallback(() => {
       const getMedicine = async () => {
-        const id = 2
-        const response = await axios.get(`${baseUrl}/getMedicineToEat/${id}`)
+        const infoUser = await getData()
+        const response = await axios.get(`${baseUrl}/getMedicineToEat/${infoUser.patient_id}`)
         setDataMedicine(response.data)
-        // console.log(response.data)
+        console.log(response.data)
+        if (response.data.length == 0) {
+          console.log("213")
+          Alert.alert("ไม่มียาที่ต้องทานในเวลานี้ค่ะ", undefined, [
+            {
+              text: "OK",
+              onPress: () => navigation.navigate("Home"),
+            },
+            
+          ]);
+        }
       }
       getMedicine();
       const time = new Date()
@@ -131,7 +141,6 @@ const Alarm = ({navigation}) => {
           />
       <TouchableOpacity style={{ backgroundColor: '#EC910A', alignItems: 'center', padding: 10, width: "50%", borderRadius: "100%", alignSelf: "center", marginBottom: 10 }}
         onPress={async() => {
-          const infoUser = await getData()
           navigation.dispatch(
             StackActions.replace("Home")
           );

@@ -1,7 +1,7 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import NotificationAlarm from "../screen/Notification";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { StyleSheet, Text } from "react-native";
+import { StyleSheet, Text, TouchableOpacity } from "react-native";
 import {
   FontAwesome,
   Ionicons,
@@ -18,7 +18,11 @@ import { useCallback } from "react";
 const AppNavigation = () => {
   const AppNavigator = createNativeStackNavigator();
   const BottomTabs = createBottomTabNavigator();
-  
+  const handleTabPress = (route, navigation) => {
+    console.log(`Tab ${route.name} pressed`);
+    // Perform any action you want here
+    navigation.navigate("Home")
+  };
   const MyBottomTab = ({ navigation }) => {
     const gotoScreen = useCallback((screenName) => {
       navigation.navigate(screenName);
@@ -33,17 +37,21 @@ const AppNavigation = () => {
         }}
       >
         <BottomTabs.Screen
-          name="Menu"
-          // component={()=>gotoScreen("Home")}
-          options={{
-            tabBarIcon: ({ color, size }) => {
-              return <Entypo name="home" size={24} color={color} />;
-            },
-            tabBarLabel: () => {
-              return <Text style={{ fontSize: 12 }}>หน้าหลัก</Text>;
-            },
-          }}
-        >{()=>gotoScreen("Home")}</BottomTabs.Screen>
+            name="Menu"
+            component={Home}
+          options={({ route, navigation }) => ({
+              tabBarButton: (props) => (
+                <TouchableOpacity
+                  {...props}
+                  onPress={() => handleTabPress(route, navigation)}
+              >
+                  <Entypo name="home" size={24} />
+                  <Text>หน้าหลัก</Text>
+                </TouchableOpacity>
+              ),
+            })}
+        >
+          </BottomTabs.Screen>
         <BottomTabs.Screen
           name="Drugs"
           component={Medicine}
