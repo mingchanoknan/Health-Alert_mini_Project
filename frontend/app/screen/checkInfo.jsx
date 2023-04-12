@@ -6,6 +6,7 @@ import {
   View,
   TextInput,
   TouchableOpacity,
+  Alert
 } from "react-native";
 import { StackActions } from "@react-navigation/native";
 import { baseUrl } from "@env";
@@ -50,7 +51,24 @@ const CheckInfo = ({ route, navigation }) => {
           StackActions.replace("Home")
         );
       } else {
-        alert("ไม่พบบัญชีผู้ใช้งาน");
+        Alert.alert(
+          //title
+          ' ไม่พบบัญชีผู้ใช้งาน',
+          //body
+          'คุณต้องการถ่ายรูปบัตรประชาชนใหม่หรือไม่?',
+          [
+            {
+              text: 'Yes', onPress: () => navigation.navigate("Scan"),
+          style:'default'  },
+            {
+              text: "Cancel",
+              onPress: () => console.log("Cancel Pressed"),
+              style: "cancel",
+            }
+          ],
+          { cancelable: false }
+          //clicking out side of alert will not cancel
+        );
       }
     } catch (error) {
       console.log(error);

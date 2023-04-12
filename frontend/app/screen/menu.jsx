@@ -40,12 +40,14 @@ const Home = ({ navigation }) => {
   const [name,setName] = useState()
   const [loading, setLoading] = useState(true);
   const logout = useNavigation();
-  const handlePress = () => {
+
+  const handlePress = async() => {
     logout.reset({
       index: 0,
       routes: [{ name: "Scan" }],
     });
-    // alert("success")
+      await removeData()
+      console.log("remove")
   };
 
 
@@ -111,10 +113,11 @@ const Home = ({ navigation }) => {
           title: 'แจ้งเตือนการกินยา',
           body: 'ได้เวลากินยาแล้วค่ะ!',
         },
-          trigger:null
-        //   {
-        //   date: new Date().setHours(parseInt(hhmmss[0]), parseInt(hhmmss[1]), parseInt(hhmmss[2]))
-        // },
+          // trigger:null
+          trigger:
+        {
+          date: new Date().setHours(parseInt(hhmmss[0]), parseInt(hhmmss[1]), parseInt(hhmmss[2]))
+        },
         });
       }
       catch (err) {
@@ -276,12 +279,7 @@ const Home = ({ navigation }) => {
             </Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.box}
-          onPress={async() => {
-            await removeData()
-            console.log("remove")
-          }
-          }>
+          <TouchableOpacity style={styles.box}>
             <Image
               source={require("../../assets/other.png")}
               style={{ width: "30%", height: "40%" }}
@@ -293,7 +291,7 @@ const Home = ({ navigation }) => {
           </TouchableOpacity>
         </View>
       </View>
-
+      {user && (
       <View
         style={{
           backgroundColor: "white",
@@ -317,7 +315,7 @@ const Home = ({ navigation }) => {
         </Text>
         <View style={{ flex: 3 }}>
 
-        { user != [] && (
+        { user.length > 0 && (
           <FlatList
             data={user}
             renderItem={renderGridItem}
@@ -325,11 +323,12 @@ const Home = ({ navigation }) => {
             keyExtractor={(item) => item.medicine_id}
           />
         )}
-        { user == [] && ( 
-          <Text style={{fontWeight: 'bold', textAlign: 'center', color:'gray'}}>- ไม่มีรายการยา -</Text>
+        { user.length == 0 && ( 
+          <Text style={{fontWeight: 'bold', textAlign: 'center', color:'gray'}}>- ไม่มีรายการยาที่ต้องกินในวันนี้แล้วค่ะ-</Text>
         )}
         </View>
       </View>
+       )}
     </View>
   );
 };
