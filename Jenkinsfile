@@ -40,7 +40,16 @@
     stage('docker run image') {
         steps {
             dir('Health-Alert_mini_Project') {
-                sh "docker-compose up -d" 
+                sh "docker-compose up -d"
+                
+            }
+        }
+    }
+    stage('check docker run image') {
+        steps {
+            dir('Health-Alert_mini_Project') {
+                sh "docker ps"
+                
             }
         }
     }
