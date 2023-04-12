@@ -1,8 +1,8 @@
   pipeline {
    agent any
-//    environment {
-//         DOCKER_CREDS = credentials('docker-access-')
-//    }
+   environment {
+        DOCKER_CREDS = credentials('DOCKER_CREDS')
+   }
    stages {
     // stage('verify') {
     //     steps {
@@ -24,7 +24,7 @@
     stage('login docker') {
         steps {
             script {
-                sh 'docker login -u mingchanoknan --password dckr_pat_oK9mimodZdOjDTDFAesL4lDfNtQ'
+                sh 'docker login -u mingchanoknan --password-stdin $DOCKER_CREDS'
             }
         }
     }
