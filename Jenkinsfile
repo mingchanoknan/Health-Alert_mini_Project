@@ -24,7 +24,7 @@
     stage('login docker') {
         steps {
             script {
-                sh 'echo $DOCKER_CREDS | docker login -u mingchanoknan --password-stdin'
+                sh 'docker login -u mingchanoknan -p $DOCKER_CREDS'
             }
         }
     }
