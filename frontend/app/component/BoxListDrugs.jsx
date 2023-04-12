@@ -21,7 +21,7 @@ const BoxListDrugs = (item) => {
   // console.log("time_morning" + morning_time);
   // console.log("time_nooning" + noon_time);
  
-  //เช้า 5-10
+  //เช้า 4-10
   //กลางวัน 11-15
   //เย็น 16-20
   //ก่อน 21:00-04
@@ -39,6 +39,7 @@ const BoxListDrugs = (item) => {
   //     setTimePeriod('morning');
   //   }
   // }, []);
+
   
   // useEffect(() => {
   //   console.log(timePeriod +' time');

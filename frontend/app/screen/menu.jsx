@@ -8,13 +8,22 @@ import {
   ScrollView,
   FlatList,
   ActivityIndicator,
+  LogBox,
+  Alert,
 } from "react-native";
+import {
+  FontAwesome,
+  Ionicons,
+  AntDesign
+} from "@expo/vector-icons";
 import BoxListDrugs from "../component/BoxListDrugs";
+import { useNavigation } from "@react-navigation/native";
 import { REMINDER } from "../dummy/Reminder";
 import { baseUrl } from "@env";
 import axios from "axios";
 import * as Notifications from 'expo-notifications';
 import * as Permissions from 'expo-permissions';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
@@ -23,19 +32,57 @@ Notifications.setNotificationHandler({
   }),
 });
 
-const Home = ({ route, navigation }) => {
-  const { name, id } = route.params;
+const Home = ({ navigation }) => {
+  // const { name, id } = route.params;
   // console.log(name);
-  const [user, setUser] = useState(REMINDER);
+  const [user, setUser] = useState();
   // console.log(user);
+  const [name,setName] = useState()
   const [loading, setLoading] = useState(true);
+  const logout = useNavigation();
+  const handlePress = () => {
+    logout.reset({
+      index: 0,
+      routes: [{ name: "Scan" }],
+    });
+    // alert("success")
+  };
+
+
+    const getData = async () => {
+      try {
+        const jsonValue = await AsyncStorage.getItem('@storage_Key')
+        const obj = JSON.parse(jsonValue)
+        // console.log(obj)
+        if (jsonValue != null) {
+          return obj
+        }
+        else {
+          return null
+        }
+      } catch(e) {
+        console.log("error")
+        console.log(e)
+      }
+  }
+  
+  const removeData = async() => {
+    try {
+      await AsyncStorage.removeItem('@storage_Key');
+      console.log( getData())
+    } catch (error) {
+      console.log('Error removing data: ', error);
+    }
+  }
 
   useEffect(() => {
     // const url = `https://example.com/api/data`;
     const fetchUsers = async () => {
       try {
-        // console.log('test');
-          let response = await axios.get(`${baseUrl}/timeToEatMedicineComing/${id}`)
+        const infoUser = await getData()
+          setName(infoUser.firstName+" "+infoUser.lastName)
+          let response = await axios.get(`${baseUrl}/timeToEatMedicineComing/${infoUser.patient_id}`)
+          // let response = await axios.get(`http://54.163.234.235:3000/getRemider/${idcard}`)
           setUser(response.data);
           // console.log(response.data)
       }
@@ -45,6 +92,7 @@ const Home = ({ route, navigation }) => {
       }
     };
     fetchUsers();
+    
   }, []);
 
   const renderGridItem = ({ item }) => {
@@ -109,6 +157,22 @@ const Home = ({ route, navigation }) => {
       ></Image>
 
       <View style={styles.header}>
+        <AntDesign 
+          name="logout"
+          size={24}
+          color="black"
+          onPress={() => {
+            Alert.alert("ต้องการออกจากระบบหรือไม่", undefined, [
+              {
+                text: "Cancel",
+                onPress: () => console.log("Cancel Pressed"),
+                style: "cancel",
+              },
+              { text: "Yes", onPress: () => handlePress() },
+            ]);
+          }}
+          style={{flexDirection: 'row', alignSelf: 'flex-end', right: '-30%', top: '-5%' }}
+        />
         <Text
           style={{
             fontSize: 20,
@@ -212,10 +276,16 @@ const Home = ({ route, navigation }) => {
             </Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.box}>
+          <TouchableOpacity style={styles.box}
+          onPress={async() => {
+            await removeData()
+            console.log("remove")
+          }
+          }>
             <Image
               source={require("../../assets/other.png")}
               style={{ width: "30%", height: "40%" }}
+              
             ></Image>
             <Text style={{ fontWeight: "bold", top: 5, fontSize: 12 }}>
               คำแนะนำ
@@ -246,6 +316,7 @@ const Home = ({ route, navigation }) => {
           รายการแจ้งเตือนที่ใกล้จะถึง..{" "}
         </Text>
         <View style={{ flex: 3 }}>
+
         { user != [] && (
           <FlatList
             data={user}

@@ -6,30 +6,61 @@ import {
   Image,
   ScrollView,
   FlatList,
-  ActivityIndicator,
+  ActivityIndicator, Alert
 } from "react-native";
+import {
+  FontAwesome,
+  Ionicons,
+  AntDesign
+} from "@expo/vector-icons";
 import BoxListDrugs from "../component/BoxListMedicine";
-import { MEDICINE } from "../dummy/Medicine";
+// import { MEDICINE } from "../dummy/Medicine";
 import Search from "../component/SearchBar";
+import { useNavigation } from "@react-navigation/native";
 import { baseUrl } from "@env";
 import axios from "axios";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Medicine = ({ route, navigation }) => {
-  const [user, setUser] = useState(MEDICINE);
-  const [all, setAll] = useState(MEDICINE);
+  const [user, setUser] = useState();
+  const [all, setAll] = useState();
   // console.log(user);
   const [loading, setLoading] = useState(true);
 
   const [searchPhrase, setSearchPhrase] = useState("");
   const [clicked, setClicked] = useState(false);
+  const logout = useNavigation();
+  const handlePress = () => {
+    logout.reset({
+      index: 0,
+      routes: [{ name: "Scan" }],
+    });
+    // alert("success")
+  };
 
+  const getData = async () => {
+    try {
+      const jsonValue = await AsyncStorage.getItem('@storage_Key')
+      const obj = JSON.parse(jsonValue)
+      // console.log(obj)
+      if (jsonValue != null) {
+        return obj
+      }
+      else {
+        return null
+      }
+    } catch(e) {
+      console.log("error")
+      console.log(e)
+    }
+  }
+  
   useEffect(() => {
-    const url = `https://example.com/api/data`;
-
     const fetchUsers = async () => {
       try {
         // console.log('test');
-          let response = await axios.get(`${baseUrl}/getListDrugs`)
+          const infoUser = await getData()
+          let response = await axios.get(`${baseUrl}/getListDrugs/${infoUser.patient_id}`)
           setUser(response.data);
           setAll(response.data);
           // console.log(response.data)
@@ -75,6 +106,22 @@ const Medicine = ({ route, navigation }) => {
         source={require("../../assets/bg_medicine.png")}
         style={styles.background}
       ></Image>
+       <AntDesign 
+          name="logout"
+          size={24}
+          color="black"
+          onPress={() => {
+            Alert.alert("ต้องการออกจากระบบหรือไม่", undefined, [
+              {
+                text: "Cancel",
+                onPress: () => console.log("Cancel Pressed"),
+                style: "cancel",
+              },
+              { text: "Yes", onPress: () => handlePress() },
+            ]);
+          }}
+          style={{position: 'absolute', alignSelf: 'flex-end', right: "10%", top: '7%' }}
+        />
       <Text
         style={{
           fontSize: 22,

@@ -11,21 +11,46 @@ import { StackActions } from "@react-navigation/native";
 import { baseUrl } from "@env";
 import axios from "axios";
 import { PATIENT } from "../dummy/Patient";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const CheckInfo = ({ navigation }) => {
+const CheckInfo = ({ route, navigation }) => {
+  const { data } = route.params;
   const [idcard, setIdcard] = useState("1711000121111");
   const [name, setName] = useState("นางสาวอาภัสรา โมรัษเฐียร");
   const [id, setId] = useState(1);
   const [birthdate, setBirthDate] = useState("");
   const [address, setAddress] = useState("");
 
+  const storeData = async (value) => {
+    try {
+      
+      const jsonValue = JSON.stringify(value)
+      // console.log(jsonValue)
+      await AsyncStorage.setItem('@storage_Key', jsonValue)
+    } catch (e) {
+      console.log("error")
+      console.log(e)
+    }
+  }
+
+  useEffect(() => {
+   
+    setIdcard(data.Identification_Number);
+    setName(data.FullNameTH);
+    setBirthDate(data.BirthdayTH);
+    setAddress(data.Address);
+  }, []);
   const onConfirmInfo = async (event) => {
     try {
       const result = await axios.get(`${baseUrl}/getPatient/${idcard}`);
-      if (result.status === 200) {
-        navigation.dispatch(StackActions.replace("Home", { name : name, id : id }));
+      if (result.data != []) {
+        // console.log(result.data)
+        await storeData(result.data)
+        navigation.dispatch(
+          StackActions.replace("Home")
+        );
       } else {
-        alert("ไม่พบบัญชีผู้ใช้งาน")
+        alert("ไม่พบบัญชีผู้ใช้งาน");
       }
     } catch (error) {
       console.log(error);
@@ -63,32 +88,27 @@ const CheckInfo = ({ navigation }) => {
       </Text>
 
       <Text style={styles.txt}>เลขบัตรประชาชน</Text>
-      <TextInput onChangeText={onChangeIDcardHandler} style={styles.textInput}>
-        {" "}
-        {idcard}{" "}
+      <TextInput value={idcard} onChangeText={onChangeIDcardHandler} style={styles.textInput}>
+        
       </TextInput>
 
       <Text style={styles.txt}>ชื่อ-นามสกุล</Text>
-      <TextInput onChangeText={onChangeNameHandler} style={styles.textInput}>
-        {name}
+      <TextInput value={name} onChangeText={onChangeNameHandler} style={styles.textInput}>
+        
       </TextInput>
 
       <Text style={styles.txt}>วัน-เดือน-ปีเกิด</Text>
-      <TextInput
+      <TextInput value={birthdate}
         onChangeText={onChangeBirthDateHandler}
         style={styles.textInput}
       >
-        {" "}
-        {birthdate}
       </TextInput>
 
       <Text style={styles.txt}>ที่อยู่</Text>
-      <TextInput
+      <TextInput value={address}
         onChangeText={onChangeAddressHandler}
         style={[styles.textInput, { height: "20%", borderRadius: 20 }]}
       >
-        {" "}
-        {address}{" "}
       </TextInput>
 
       <TouchableOpacity style={styles.btnCheck} onPress={onConfirmInfo}>
