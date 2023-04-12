@@ -1,16 +1,16 @@
   pipeline {
    agent any
    stages {
-    stage('verify') {
-        steps {
-            sh '''
-                docker info
-                docker version
-                docker compose version
-                curl --version
-            '''
-        }
-    }
+    // stage('verify') {
+    //     steps {
+    //         sh '''
+    //             docker info
+    //             docker version
+    //             docker compose version
+    //             curl --version
+    //         '''
+    //     }
+    // }
     stage('logout') {
         steps {
             script {
