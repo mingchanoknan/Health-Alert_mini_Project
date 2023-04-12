@@ -86,7 +86,7 @@ const Home = ({ navigation }) => {
           let response = await axios.get(`${baseUrl}/timeToEatMedicineComing/${infoUser.patient_id}`)
           // let response = await axios.get(`http://54.163.234.235:3000/getRemider/${idcard}`)
           setUser(response.data);
-          // console.log(response.data)
+          // console.log("response.data")
       }
       catch(error) {
         console.log('error');
@@ -105,6 +105,7 @@ const Home = ({ navigation }) => {
 
   //Notification
   const requestNotificationPermission = async (hhmmss) => {
+    if(!isNaN(parseInt(hhmmss[0])) && !isNaN(parseInt(hhmmss[1])) && !isNaN(parseInt(hhmmss[2]))){
     const { status } = await Notifications.requestPermissionsAsync(Permissions.NOTIFICATIONS);
     if (status === 'granted') {
       try {
@@ -117,6 +118,7 @@ const Home = ({ navigation }) => {
           trigger:
         {
           date: new Date().setHours(parseInt(hhmmss[0]), parseInt(hhmmss[1]), parseInt(hhmmss[2]))
+          
         },
         });
       }
@@ -128,6 +130,7 @@ const Home = ({ navigation }) => {
     } else {
       alert('You need to grant permission to receive notifications');
     }
+  }
   };
 
   const handleNotificationClick = (notification) => {
@@ -135,14 +138,15 @@ const Home = ({ navigation }) => {
   };
   useEffect(() => {
     const getTimeForAlert = async () => {
-      const id = 3;
-      let promises =""
-      const response = await axios.get(`${baseUrl}/getEdableTimebyId/${id}`);
-      if (response.data.length){
+      let promises = ""
+      const infoUser = await getData()
+      const response = await axios.get(`${baseUrl}/getEdableTimebyId/${infoUser.patient_id}`);
+      console.log(response.data)
+      if (response.data.length > 0){
         const hhmmssValues = response.data.map(x => x.split(":"));
         promises = hhmmssValues.map(hhmmss => requestNotificationPermission(hhmmss));
       }
-      requestNotificationPermission("14:49:0")
+      // requestNotificationPermission(["00","07","00"])
       if (promises != "") {
         await Promise.all(promises);
       }
