@@ -8,6 +8,7 @@ import {
   FlatList,
   ActivityIndicator,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import {
   FontAwesome5,
@@ -21,14 +22,47 @@ import * as FileSystem from "expo-file-system";
 import { StackActions } from "@react-navigation/native";
 import { baseUrl } from "@env";
 import axios from "axios";
+import { useFocusEffect } from "@react-navigation/native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Loading from "../component/Loading";
 
 const ScanID = ({ route, navigation }) => {
   const [image, setImage] = useState(null); //รูปบัตรปปช.
   const [base64Image, setBase64Image] = useState(null);
-  const [data, setData] = useState(null);
-  console.log(image);
+  const [loading, setLoading] = useState(false);
+  // console.log(image);
   //   console.log(base64Image);
+  const getData = async () => {
+    try {
+      const jsonValue = await AsyncStorage.getItem('@storage_Key')
+      const obj = JSON.parse(jsonValue)
+      // console.log(obj)
+      if (jsonValue != null) {
+        return obj
+      }
+      else {
+        return null
+      }
+    } catch(e) {
+      console.log("error")
+      console.log(e)
+    }
+  }
+  useFocusEffect(
+    useCallback (() => {
+      const checkLocalStorage = async () => {
+        const infoUser = await getData()
+        if (infoUser != null) {
+          navigation.dispatch(
+            StackActions.replace("Home", { id: infoUser.patient_id ,name: infoUser.firstName+" "+infoUser.lastName})
+          );
+        }
+      }
+      checkLocalStorage();
+     
+    },[])
 
+  )
   useEffect(() => {
     (async () => {
       if (Platform.OS !== "web") {
@@ -56,31 +90,45 @@ const ScanID = ({ route, navigation }) => {
 
   const convertImageToBase64 = async (uri) => {
     const base64 = await FileSystem.readAsStringAsync(uri, {
-      encoding: FileSystem.EncodingType.Base64,
+      encoding: 'base64' 
     });
-    setBase64Image(base64);
+    setBase64Image('data:image/jpg;base64,'+base64);
   };
 
   const sendData = async () => {
     try {
-      // console.log('test');
+      setLoading(true)
+      // console.log(base64Image.substr(0, 10));
       let response = await axios.post(
         `http://we-solved.thddns.net:5509/process-image`,
         { image: base64Image }
       );
-      if (response.status === 200) {
-        setData(response.data);
-        navigation.dispatch(StackActions.replace("CheckInfo", { data: data }));
+      console.log(response.data)
+      setLoading(false)
+
+      if (response.data.Identification_Number == "") {
+        Alert.alert(
+          //title
+          'ไม่สามารถแสดงข้อมูลได้',
+          //body
+          'กรุณาถ่ายภาพปัตรประชาชนใหม่อีกครั้ง!',
+          [
+            { text: 'Yes', onPress: () => setImage(null) }
+          ],
+          { cancelable: false }
+          //clicking out side of alert will not cancel
+        );
       } else {
-        alert("ข้อมูลผิดพลาด");
+        navigation.dispatch(StackActions.replace("CheckInfo", { data: response.data }));
       }
-      // console.log(response.data)
+      
     } catch (error) {
       console.log("error");
       console.error(error);
+    };
     }
     // navigation.dispatch(StackActions.replace("CheckInfo", { data: data }));
-  };
+  
 
   return (
     <View style={styles.container}>
@@ -172,6 +220,9 @@ const ScanID = ({ route, navigation }) => {
           </TouchableOpacity>
         )}
       </View>
+      {loading && (
+        <Loading/>
+      )}
     </View>
   );
 };

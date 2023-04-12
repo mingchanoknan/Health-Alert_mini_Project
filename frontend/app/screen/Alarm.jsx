@@ -4,6 +4,8 @@ import { useCallback, useState } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import axios from "axios";
 import { baseUrl } from "@env";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { StackActions } from "@react-navigation/native";
 
 const Alarm = ({navigation}) => {
   const [dataMedicine, setDataMedicine] = useState();
@@ -23,6 +25,23 @@ const Alarm = ({navigation}) => {
     },[])
 
   )
+
+  const getData = async () => {
+    try {
+      const jsonValue = await AsyncStorage.getItem('@storage_Key')
+      const obj = JSON.parse(jsonValue)
+      // console.log(obj)
+      if (jsonValue != null) {
+        return obj
+      }
+      else {
+        return null
+      }
+    } catch(e) {
+      console.log("error")
+      console.log(e)
+    }
+  }
 
   const Item = ({medicine}) => (
 
@@ -111,8 +130,12 @@ const Alarm = ({navigation}) => {
         keyExtractor={(item) => item.medicine_id}
           />
       <TouchableOpacity style={{ backgroundColor: '#EC910A', alignItems: 'center', padding: 10, width: "50%", borderRadius: "100%", alignSelf: "center", marginBottom: 10 }}
-        onPress={() => {
-        navigation.navigate("Home")
+        onPress={async() => {
+          const infoUser = await getData()
+          navigation.dispatch(
+            StackActions.replace("Home", { id: infoUser.patient_id ,name: infoUser.firstName+" "+infoUser.lastName})
+          );
+        // navigation.navigate("Home",{name:'test',id:'2'} )
       }}>
               <Text style={{color:"#FFFFFF"}} category="h5">ทานยาเรียบร้อย</Text>
           </TouchableOpacity>

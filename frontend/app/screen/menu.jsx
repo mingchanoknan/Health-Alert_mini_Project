@@ -21,12 +21,23 @@ import { useNavigation } from "@react-navigation/native";
 import { REMINDER } from "../dummy/Reminder";
 import { baseUrl } from "@env";
 import axios from "axios";
+import * as Notifications from 'expo-notifications';
+import * as Permissions from 'expo-permissions';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: true,
+  }),
+});
 
 const Home = ({ route, navigation }) => {
-  const { name, idcard } = route.params;
+  const { name, id } = route.params;
   // console.log(name);
   const [user, setUser] = useState(REMINDER);
   // console.log(user);
+
   const [loading, setLoading] = useState(true);
   const logout = useNavigation();
   const handlePress = () => {
@@ -37,13 +48,40 @@ const Home = ({ route, navigation }) => {
     // alert("success")
   };
 
-  useEffect(() => {
-    const url = `https://example.com/api/data`;
 
+    const getData = async () => {
+      try {
+        const jsonValue = await AsyncStorage.getItem('@storage_Key')
+        const obj = JSON.parse(jsonValue)
+        // console.log(obj)
+        if (jsonValue != null) {
+          return obj
+        }
+        else {
+          return null
+        }
+      } catch(e) {
+        console.log("error")
+        console.log(e)
+      }
+  }
+  
+  const removeData = async() => {
+    try {
+      await AsyncStorage.removeItem('@storage_Key');
+      console.log( getData())
+    } catch (error) {
+      console.log('Error removing data: ', error);
+    }
+  }
+
+  useEffect(() => {
+    // const url = `https://example.com/api/data`;
     const fetchUsers = async () => {
       try {
-        // console.log('test');
-          let response = await axios.get(`http://54.163.234.235:3000/getRemider/${idcard}`)
+        const infoUser = await getData()
+          let response = await axios.get(`${baseUrl}/timeToEatMedicineComing/${infoUser.patient_id}`)
+          // let response = await axios.get(`http://54.163.234.235:3000/getRemider/${idcard}`)
           setUser(response.data);
           // console.log(response.data)
       }
@@ -59,6 +97,55 @@ const Home = ({ route, navigation }) => {
     // console.log("test ");
     return <BoxListDrugs item={item} numberOfLines={1} />;
   };
+
+
+  //Notification
+  const requestNotificationPermission = async (hhmmss) => {
+    const { status } = await Notifications.requestPermissionsAsync(Permissions.NOTIFICATIONS);
+    if (status === 'granted') {
+      try {
+        await Notifications.scheduleNotificationAsync({
+        content: {
+          title: 'แจ้งเตือนการกินยา',
+          body: 'ได้เวลากินยาแล้วค่ะ!',
+        },
+          trigger:null
+        //   {
+        //   date: new Date().setHours(parseInt(hhmmss[0]), parseInt(hhmmss[1]), parseInt(hhmmss[2]))
+        // },
+        });
+      }
+      catch (err) {
+        console.log(err)
+      }
+      
+      Notifications.addNotificationResponseReceivedListener(handleNotificationClick);
+    } else {
+      alert('You need to grant permission to receive notifications');
+    }
+  };
+
+  const handleNotificationClick = (notification) => {
+    navigation.navigate("alarm");
+  };
+  useEffect(() => {
+    const getTimeForAlert = async () => {
+      const id = 3;
+      let promises =""
+      const response = await axios.get(`${baseUrl}/getEdableTimebyId/${id}`);
+      if (response.data.length){
+        const hhmmssValues = response.data.map(x => x.split(":"));
+        promises = hhmmssValues.map(hhmmss => requestNotificationPermission(hhmmss));
+      }
+      requestNotificationPermission("14:49:0")
+      if (promises != "") {
+        await Promise.all(promises);
+      }
+      
+    };
+    getTimeForAlert();
+    
+  }, []);
 
   return (
     <View style={{ flex: 1, backgroundColor: "white" }}>
@@ -187,10 +274,16 @@ const Home = ({ route, navigation }) => {
             </Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.box}>
+          <TouchableOpacity style={styles.box}
+          onPress={async() => {
+            await removeData()
+            console.log("remove")
+          }
+          }>
             <Image
               source={require("../../assets/other.png")}
               style={{ width: "30%", height: "40%" }}
+              
             ></Image>
             <Text style={{ fontWeight: "bold", top: 5, fontSize: 12 }}>
               คำแนะนำ
@@ -221,21 +314,18 @@ const Home = ({ route, navigation }) => {
           รายการแจ้งเตือนที่ใกล้จะถึง..{" "}
         </Text>
         <View style={{ flex: 3 }}>
-          {user != null && (
-            <FlatList
-              data={user}
-              renderItem={renderGridItem}
-              numColumns={1}
-              keyExtractor={(item) => item.reminder_id}
-            />
-          )}
-          {user == null && (
-            <Text
-              style={{ fontWeight: "bold", textAlign: "center", color: "gray" }}
-            >
-              - ไม่มีรายการยา -
-            </Text>
-          )}
+
+        { user != [] && (
+          <FlatList
+            data={user}
+            renderItem={renderGridItem}
+            numColumns={1}
+            keyExtractor={(item) => item.medicine_id}
+          />
+        )}
+        { user == [] && ( 
+          <Text style={{fontWeight: 'bold', textAlign: 'center', color:'gray'}}>- ไม่มีรายการยา -</Text>
+        )}
         </View>
       </View>
     </View>
