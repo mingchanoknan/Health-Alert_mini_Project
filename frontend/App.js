@@ -1,4 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
+import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { NavigationContainer } from "@react-navigation/native";
 import CheckInfo from "./app/screen/checkInfo";
@@ -10,10 +11,11 @@ import { ApplicationProvider, Layout } from '@ui-kitten/components';
 import * as eva from '@eva-design/eva';
 
 export default function App() {
+  const [userFromApp, setUserFromApp] = useState(null);
   return (
     <ApplicationProvider {...eva} theme={eva.light}>
     <NavigationContainer>
-      <AppNavigation/>
+      <AppNavigation setUserFromApp={setUserFromApp}/>
       </NavigationContainer>
     </ApplicationProvider>
   );

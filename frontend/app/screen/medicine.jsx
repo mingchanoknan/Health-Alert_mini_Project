@@ -6,11 +6,17 @@ import {
   Image,
   ScrollView,
   FlatList,
-  ActivityIndicator,
+  ActivityIndicator, Alert
 } from "react-native";
+import {
+  FontAwesome,
+  Ionicons,
+  AntDesign
+} from "@expo/vector-icons";
 import BoxListDrugs from "../component/BoxListMedicine";
 import { MEDICINE } from "../dummy/Medicine";
 import Search from "../component/SearchBar";
+import { useNavigation } from "@react-navigation/native";
 import { baseUrl } from "@env";
 import axios from "axios";
 
@@ -22,6 +28,14 @@ const Medicine = ({ route, navigation }) => {
 
   const [searchPhrase, setSearchPhrase] = useState("");
   const [clicked, setClicked] = useState(false);
+  const logout = useNavigation();
+  const handlePress = () => {
+    logout.reset({
+      index: 0,
+      routes: [{ name: "Scan" }],
+    });
+    // alert("success")
+  };
 
   useEffect(() => {
     const url = `https://example.com/api/data`;
@@ -75,6 +89,22 @@ const Medicine = ({ route, navigation }) => {
         source={require("../../assets/bg_medicine.png")}
         style={styles.background}
       ></Image>
+       <AntDesign 
+          name="logout"
+          size={24}
+          color="black"
+          onPress={() => {
+            Alert.alert("ต้องการออกจากระบบหรือไม่", undefined, [
+              {
+                text: "Cancel",
+                onPress: () => console.log("Cancel Pressed"),
+                style: "cancel",
+              },
+              { text: "Yes", onPress: () => handlePress() },
+            ]);
+          }}
+          style={{position: 'absolute', alignSelf: 'flex-end', right: "10%", top: '7%' }}
+        />
       <Text
         style={{
           fontSize: 22,

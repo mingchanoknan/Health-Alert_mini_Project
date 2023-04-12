@@ -8,8 +8,16 @@ import {
   ScrollView,
   FlatList,
   ActivityIndicator,
+  LogBox,
+  Alert,
 } from "react-native";
+import {
+  FontAwesome,
+  Ionicons,
+  AntDesign
+} from "@expo/vector-icons";
 import BoxListDrugs from "../component/BoxListDrugs";
+import { useNavigation } from "@react-navigation/native";
 import { REMINDER } from "../dummy/Reminder";
 import { baseUrl } from "@env";
 import axios from "axios";
@@ -20,6 +28,14 @@ const Home = ({ route, navigation }) => {
   const [user, setUser] = useState(REMINDER);
   // console.log(user);
   const [loading, setLoading] = useState(true);
+  const logout = useNavigation();
+  const handlePress = () => {
+    logout.reset({
+      index: 0,
+      routes: [{ name: "Scan" }],
+    });
+    // alert("success")
+  };
 
   useEffect(() => {
     const url = `https://example.com/api/data`;
@@ -52,6 +68,22 @@ const Home = ({ route, navigation }) => {
       ></Image>
 
       <View style={styles.header}>
+        <AntDesign 
+          name="logout"
+          size={24}
+          color="black"
+          onPress={() => {
+            Alert.alert("ต้องการออกจากระบบหรือไม่", undefined, [
+              {
+                text: "Cancel",
+                onPress: () => console.log("Cancel Pressed"),
+                style: "cancel",
+              },
+              { text: "Yes", onPress: () => handlePress() },
+            ]);
+          }}
+          style={{flexDirection: 'row', alignSelf: 'flex-end', right: '-30%', top: '-5%' }}
+        />
         <Text
           style={{
             fontSize: 20,
@@ -189,17 +221,21 @@ const Home = ({ route, navigation }) => {
           รายการแจ้งเตือนที่ใกล้จะถึง..{" "}
         </Text>
         <View style={{ flex: 3 }}>
-        { user != null && (
-          <FlatList
-            data={user}
-            renderItem={renderGridItem}
-            numColumns={1}
-            keyExtractor={(item) => item.reminder_id}
-          />
-        )}
-        { user == null && ( 
-          <Text style={{fontWeight: 'bold', textAlign: 'center', color:'gray'}}>- ไม่มีรายการยา -</Text>
-        )}
+          {user != null && (
+            <FlatList
+              data={user}
+              renderItem={renderGridItem}
+              numColumns={1}
+              keyExtractor={(item) => item.reminder_id}
+            />
+          )}
+          {user == null && (
+            <Text
+              style={{ fontWeight: "bold", textAlign: "center", color: "gray" }}
+            >
+              - ไม่มีรายการยา -
+            </Text>
+          )}
         </View>
       </View>
     </View>
