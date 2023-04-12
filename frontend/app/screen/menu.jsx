@@ -171,7 +171,7 @@ const Home = ({ navigation }) => {
               { text: "Yes", onPress: () => handlePress() },
             ]);
           }}
-          style={{flexDirection: 'row', alignSelf: 'flex-end', right: '-30%', top: '-5%' }}
+          style={{flexDirection: 'row', alignSelf: 'flex-end', top: '-5%', marginRight: "5%" }}
         />
         <Text
           style={{
@@ -345,8 +345,9 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
     top: "6%",
     margin: 20,
-    left: 20,
+    paddingLeft: 20,
     zIndex: 100,
+    width: "90%"
   },
   container: {
     flex: 1,
