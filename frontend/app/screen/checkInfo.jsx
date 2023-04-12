@@ -47,7 +47,7 @@ const CheckInfo = ({ route, navigation }) => {
         // console.log(result.data)
         await storeData(result.data)
         navigation.dispatch(
-          StackActions.replace("Home", { name: result.data.firstName+" "+result.data.lastName, id: id })
+          StackActions.replace("Home")
         );
       } else {
         alert("ไม่พบบัญชีผู้ใช้งาน");

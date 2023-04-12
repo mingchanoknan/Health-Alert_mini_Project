@@ -133,7 +133,7 @@ const Alarm = ({navigation}) => {
         onPress={async() => {
           const infoUser = await getData()
           navigation.dispatch(
-            StackActions.replace("Home", { id: infoUser.patient_id ,name: infoUser.firstName+" "+infoUser.lastName})
+            StackActions.replace("Home")
           );
         // navigation.navigate("Home",{name:'test',id:'2'} )
       }}>

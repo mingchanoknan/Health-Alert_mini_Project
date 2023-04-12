@@ -32,12 +32,12 @@ Notifications.setNotificationHandler({
   }),
 });
 
-const Home = ({ route, navigation }) => {
-  const { name, id } = route.params;
+const Home = ({ navigation }) => {
+  // const { name, id } = route.params;
   // console.log(name);
-  const [user, setUser] = useState(REMINDER);
+  const [user, setUser] = useState();
   // console.log(user);
-
+  const [name,setName] = useState()
   const [loading, setLoading] = useState(true);
   const logout = useNavigation();
   const handlePress = () => {
@@ -80,6 +80,7 @@ const Home = ({ route, navigation }) => {
     const fetchUsers = async () => {
       try {
         const infoUser = await getData()
+          setName(infoUser.firstName+" "+infoUser.lastName)
           let response = await axios.get(`${baseUrl}/timeToEatMedicineComing/${infoUser.patient_id}`)
           // let response = await axios.get(`http://54.163.234.235:3000/getRemider/${idcard}`)
           setUser(response.data);
@@ -91,6 +92,7 @@ const Home = ({ route, navigation }) => {
       }
     };
     fetchUsers();
+    
   }, []);
 
   const renderGridItem = ({ item }) => {

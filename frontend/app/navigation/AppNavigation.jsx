@@ -14,11 +14,15 @@ import Home from "../screen/menu";
 import Medicine from "../screen/medicine";
 import CheckInfo from "../screen/checkInfo";
 import ScanID from "../screen/scanIDCard";
+import { useCallback } from "react";
 const AppNavigation = () => {
   const AppNavigator = createNativeStackNavigator();
   const BottomTabs = createBottomTabNavigator();
-
-  const MyBottomTab = () => {
+  
+  const MyBottomTab = ({ navigation }) => {
+    const gotoScreen = useCallback((screenName) => {
+      navigation.navigate(screenName);
+    }, [navigation]);
     return (
       <BottomTabs.Navigator
         initialRouteName="Drugs"
@@ -30,7 +34,7 @@ const AppNavigation = () => {
       >
         <BottomTabs.Screen
           name="Menu"
-          component={Medicine}
+          // component={()=>gotoScreen("Home")}
           options={{
             tabBarIcon: ({ color, size }) => {
               return <Entypo name="home" size={24} color={color} />;
@@ -39,7 +43,7 @@ const AppNavigation = () => {
               return <Text style={{ fontSize: 12 }}>หน้าหลัก</Text>;
             },
           }}
-        />
+        >{()=>gotoScreen("Home")}</BottomTabs.Screen>
         <BottomTabs.Screen
           name="Drugs"
           component={Medicine}
