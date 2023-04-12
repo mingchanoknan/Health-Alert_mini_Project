@@ -11,6 +11,7 @@ import { StackActions } from "@react-navigation/native";
 import { baseUrl } from "@env";
 import axios from "axios";
 import { PATIENT } from "../dummy/Patient";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const CheckInfo = ({ route, navigation }) => {
   const { data } = route.params;
@@ -20,18 +21,33 @@ const CheckInfo = ({ route, navigation }) => {
   const [birthdate, setBirthDate] = useState("");
   const [address, setAddress] = useState("");
 
+  const storeData = async (value) => {
+    try {
+      
+      const jsonValue = JSON.stringify(value)
+      // console.log(jsonValue)
+      await AsyncStorage.setItem('@storage_Key', jsonValue)
+    } catch (e) {
+      console.log("error")
+      console.log(e)
+    }
+  }
+
   useEffect(() => {
-    setIdcard(data.data.Identification_Number);
-    setName(data.data.FullNameTH);
-    setBirthDate(data.data.BirthdayTH);
-    setAddress(data.data.Address);
+   
+    setIdcard(data.Identification_Number);
+    setName(data.FullNameTH);
+    setBirthDate(data.BirthdayTH);
+    setAddress(data.Address);
   }, []);
   const onConfirmInfo = async (event) => {
     try {
       const result = await axios.get(`${baseUrl}/getPatient/${idcard}`);
-      if (result.status === 200) {
+      if (result.data != []) {
+        // console.log(result.data)
+        await storeData(result.data)
         navigation.dispatch(
-          StackActions.replace("Home", { name: name, id: idcard })
+          StackActions.replace("Home", { name: result.data.firstName+" "+result.data.lastName, id: id })
         );
       } else {
         alert("ไม่พบบัญชีผู้ใช้งาน");

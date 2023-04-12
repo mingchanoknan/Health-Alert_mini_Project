@@ -15,6 +15,7 @@ import { baseUrl } from "@env";
 import axios from "axios";
 import * as Notifications from 'expo-notifications';
 import * as Permissions from 'expo-permissions';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
@@ -24,22 +25,42 @@ Notifications.setNotificationHandler({
 });
 
 const Home = ({ route, navigation }) => {
-  const { name, idcard } = route.params;
+  const { name, id } = route.params;
   // console.log(name);
   const [user, setUser] = useState(REMINDER);
   // console.log(user);
-  const [loading, setLoading] = useState(true);
-
+    const getData = async () => {
+      try {
+        const jsonValue = await AsyncStorage.getItem('@storage_Key')
+        const obj = JSON.parse(jsonValue)
+        // console.log(obj)
+        if (jsonValue != null) {
+          return obj
+        }
+        else {
+          return null
+        }
+      } catch(e) {
+        console.log("error")
+        console.log(e)
+      }
+  }
+  
+  const removeData = async() => {
+    try {
+      await AsyncStorage.removeItem('@storage_Key');
+      console.log( getData())
+    } catch (error) {
+      console.log('Error removing data: ', error);
+    }
+  }
   useEffect(() => {
     // const url = `https://example.com/api/data`;
     const fetchUsers = async () => {
       try {
-        // console.log('test');
-
-          let response = await axios.get(`${baseUrl}/timeToEatMedicineComing/${id}`)
-
+        const infoUser = await getData()
+          let response = await axios.get(`${baseUrl}/timeToEatMedicineComing/${infoUser.patient_id}`)
           // let response = await axios.get(`http://54.163.234.235:3000/getRemider/${idcard}`)
-
           setUser(response.data);
           // console.log(response.data)
       }
@@ -216,10 +237,16 @@ const Home = ({ route, navigation }) => {
             </Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.box}>
+          <TouchableOpacity style={styles.box}
+          onPress={async() => {
+            await removeData()
+            console.log("remove")
+          }
+          }>
             <Image
               source={require("../../assets/other.png")}
               style={{ width: "30%", height: "40%" }}
+              
             ></Image>
             <Text style={{ fontWeight: "bold", top: 5, fontSize: 12 }}>
               คำแนะนำ

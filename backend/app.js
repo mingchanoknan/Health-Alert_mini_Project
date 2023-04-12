@@ -47,10 +47,10 @@ app.get("/getPatient/:id", function (req, res, next) {
   );
 });
 
-app.get("/getListDrugs", (req, res) => {
-  console.log("axios");
-  const sql = "SELECT * FROM `Medicine`";
-  connection.query(sql, (err, result) => {
+app.get("/getListDrugs/:id", (req, res) => {
+
+  connection.query(`SELECT medicine_id,medicine_name,amount_per_time,medicine_image,treatment,number_of_times_per_day,period 
+  FROM Reminder JOIN Medicine USING (medicine_id) WHERE patient_id = ?`, [req.params.id], (err, result) => {
     if (err) {
       console.error(err);
       res.status(500).send("Error retrieving users from database");
@@ -61,22 +61,22 @@ app.get("/getListDrugs", (req, res) => {
   });
 });
 
-app.get("/getListDrugs/:id", function (req, res, next) {
-  // const id = req.params.id;
-  connection.query(
-    "SELECT * FROM `Medicine` WHERE `medicine_id` = ?",
-    [req.params.id],
-    function (err, results) {
-      if (err) {
-        console.error(err);
-        res.status(500).send("Error retrieving user from database");
-      } else {
-        console.log("User retrieved from database");
-        res.status(200).send(results[0]);
-      }
-    }
-  );
-});
+// app.get("/getListDrugs/:id", function (req, res, next) {
+//   // const id = req.params.id;
+//   connection.query(
+//     "SELECT * FROM `Medicine` WHERE `medicine_id` = ?",
+//     [req.params.id],
+//     function (err, results) {
+//       if (err) {
+//         console.error(err);
+//         res.status(500).send("Error retrieving user from database");
+//       } else {
+//         console.log("User retrieved from database");
+//         res.status(200).send(results[0]);
+//       }
+//     }
+//   );
+// });
 
 app.get("/getRemider/:id", function (req, res, next) {
   // const id = req.params.id;
