@@ -8,8 +8,16 @@ import {
   ScrollView,
   FlatList,
   ActivityIndicator,
+  LogBox,
+  Alert,
 } from "react-native";
+import {
+  FontAwesome,
+  Ionicons,
+  AntDesign
+} from "@expo/vector-icons";
 import BoxListDrugs from "../component/BoxListDrugs";
+import { useNavigation } from "@react-navigation/native";
 import { REMINDER } from "../dummy/Reminder";
 import { baseUrl } from "@env";
 import axios from "axios";
@@ -29,6 +37,18 @@ const Home = ({ route, navigation }) => {
   // console.log(name);
   const [user, setUser] = useState(REMINDER);
   // console.log(user);
+
+  const [loading, setLoading] = useState(true);
+  const logout = useNavigation();
+  const handlePress = () => {
+    logout.reset({
+      index: 0,
+      routes: [{ name: "Scan" }],
+    });
+    // alert("success")
+  };
+
+
     const getData = async () => {
       try {
         const jsonValue = await AsyncStorage.getItem('@storage_Key')
@@ -54,6 +74,7 @@ const Home = ({ route, navigation }) => {
       console.log('Error removing data: ', error);
     }
   }
+
   useEffect(() => {
     // const url = `https://example.com/api/data`;
     const fetchUsers = async () => {
@@ -134,6 +155,22 @@ const Home = ({ route, navigation }) => {
       ></Image>
 
       <View style={styles.header}>
+        <AntDesign 
+          name="logout"
+          size={24}
+          color="black"
+          onPress={() => {
+            Alert.alert("ต้องการออกจากระบบหรือไม่", undefined, [
+              {
+                text: "Cancel",
+                onPress: () => console.log("Cancel Pressed"),
+                style: "cancel",
+              },
+              { text: "Yes", onPress: () => handlePress() },
+            ]);
+          }}
+          style={{flexDirection: 'row', alignSelf: 'flex-end', right: '-30%', top: '-5%' }}
+        />
         <Text
           style={{
             fontSize: 20,
@@ -277,6 +314,7 @@ const Home = ({ route, navigation }) => {
           รายการแจ้งเตือนที่ใกล้จะถึง..{" "}
         </Text>
         <View style={{ flex: 3 }}>
+
         { user != [] && (
           <FlatList
             data={user}
