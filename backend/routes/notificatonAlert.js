@@ -37,12 +37,12 @@ router.get('/getMedicineToEat/:id', async (req, res, next) => {
     const conn = await pool.getConnection();
     const id = req.params.id
     try {
-        let today_addsec = new Date(Date.now() + 60 * 1000)
-        let today_delsec = new Date(Date.now() - 60 * 1000)
+        let today_addsec = new Date(Date.now() + 60 * 1000*2)
+        let today_delsec = new Date(Date.now() - 60 * 1000*2)
         let time_end = today_addsec.getHours() + ":" + today_addsec.getMinutes() + ":" + today_addsec.getSeconds();
         let time_start = today_delsec.getHours() + ":" + today_delsec.getMinutes() + ":" + today_delsec.getSeconds();
-        // time_end = "13:32:0"
-        // time_start="13:29:0"
+        // time_end = "10:28:00"
+        // time_start="10:16:00"
         
         const [row, field] = await conn.query(
             `SELECT medicine_id, medicine_name,amount_per_time,medicine_image FROM Reminder JOIN Medicine USING (medicine_id) 
@@ -66,8 +66,8 @@ router.get('/timeToEatMedicineComing/:id', async (req, res, next) => {
   
     let time_start = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
     let hours = parseInt(today.getHours()) 
-    // time_start = "12:00:00"
-    // hours = 12
+    // time_start = "14:50:00"
+    // hours = 14
     // let checkPeriodTime = () => {
     //     if (hours > 3 && hours < 11) {
     //         return "morning_time"
@@ -82,14 +82,15 @@ router.get('/timeToEatMedicineComing/:id', async (req, res, next) => {
     //         return "nitght_time"
     //     }
     // }
+    console.log(time_start)
     let checkPeriodTime =""
-    if (hours > 3 && hours < 11) {
+    if (hours >= 3 && hours < 11) {
                 checkPeriodTime = "morning_time"
             }
-            else if (hours > 11 && hours < 16){
+            else if (hours >= 11 && hours < 16){
                 checkPeriodTime = "noon_time"
             }
-            else if (hours > 16 && hours < 21){
+            else if (hours >= 16 && hours < 21){
                 checkPeriodTime = "evening_time"
             }
             else {
@@ -97,12 +98,40 @@ router.get('/timeToEatMedicineComing/:id', async (req, res, next) => {
             }
     
     try {
-        const [row, field] = await conn.query(
+        let [row, field] = []
+        if (checkPeriodTime == "morning_time") {
+            [row, field] = await conn.query(
             `SELECT ${checkPeriodTime} AS time,medicine_id, medicine_name,amount_per_time,medicine_image,treatment,number_of_times_per_day,period 
             FROM Reminder JOIN Medicine USING (medicine_id)
-            WHERE patient_id = ? AND (morning_time BETWEEN '${time_start}' AND '23:59:59' OR noon_time BETWEEN '${time_start}' AND '23:59:59' OR evening_time BETWEEN '${time_start}' AND '23:59:59' OR night_time BETWEEN '${time_start}' AND '23:59:59')
+            WHERE patient_id = ? AND (morning_time BETWEEN '${time_start}' AND '23:59:59')
             ORDER BY ${checkPeriodTime}`
             , [id])
+        }
+        else if (checkPeriodTime == "noon_time") {
+            [row, field] = await conn.query(
+                `SELECT ${checkPeriodTime} AS time,medicine_id, medicine_name,amount_per_time,medicine_image,treatment,number_of_times_per_day,period 
+                FROM Reminder JOIN Medicine USING (medicine_id)
+                WHERE patient_id = ? AND ( noon_time BETWEEN '${time_start}' AND '23:59:59')
+                ORDER BY ${checkPeriodTime}`
+                , [id])
+        }
+        else if (checkPeriodTime = "evening_time") {
+            [row, field] = await conn.query(
+                `SELECT ${checkPeriodTime} AS time,medicine_id, medicine_name,amount_per_time,medicine_image,treatment,number_of_times_per_day,period 
+                FROM Reminder JOIN Medicine USING (medicine_id)
+                WHERE patient_id = ? AND (evening_time BETWEEN '${time_start}' AND '23:59:59')
+                ORDER BY ${checkPeriodTime}`
+                , [id])
+        }
+        else {
+            [row, field] = await conn.query(
+                `SELECT ${checkPeriodTime} AS time,medicine_id, medicine_name,amount_per_time,medicine_image,treatment,number_of_times_per_day,period 
+                FROM Reminder JOIN Medicine USING (medicine_id)
+                WHERE patient_id = ? AND (night_time BETWEEN '${time_start}' AND '23:59:59')
+                ORDER BY ${checkPeriodTime}`
+                , [id])
+        }
+        
         
         res.send(row).status(200)
     }catch (err) {

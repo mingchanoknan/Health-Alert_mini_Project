@@ -14,6 +14,7 @@ const Alarm = ({navigation}) => {
     useCallback(() => {
       const getMedicine = async () => {
         const infoUser = await getData()
+        console.log("id "+infoUser.patient_id)
         const response = await axios.get(`${baseUrl}/getMedicineToEat/${infoUser.patient_id}`)
         setDataMedicine(response.data)
         console.log(response.data)
@@ -30,7 +31,17 @@ const Alarm = ({navigation}) => {
       }
       getMedicine();
       const time = new Date()
-      let time_hhmm = time.getHours() + ":" + time.getMinutes();
+      let hour = time.getHours()+""
+      let minutes = time.getMinutes()+""
+      const s = hour.length
+      if (hour.length == 1) {
+        hour = "0"+hour
+      }
+      if (minutes.length == 1) {
+        minutes = "0"+minutes
+      }
+  
+      let time_hhmm = hour + ":" + minutes;
       setCurrentTime(time_hhmm)
     },[])
 
