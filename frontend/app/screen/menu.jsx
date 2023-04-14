@@ -17,7 +17,7 @@ import {
   AntDesign
 } from "@expo/vector-icons";
 import BoxListDrugs from "../component/BoxListDrugs";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { REMINDER } from "../dummy/Reminder";
 import { baseUrl } from "@env";
 import axios from "axios";
@@ -77,25 +77,46 @@ const Home = ({ navigation }) => {
     }
   }
 
-  useEffect(() => {
-    // const url = `https://example.com/api/data`;
-    const fetchUsers = async () => {
-      try {
-        const infoUser = await getData()
-          setName(infoUser.firstName+" "+infoUser.lastName)
-          let response = await axios.get(`${baseUrl}/timeToEatMedicineComing/${infoUser.patient_id}`)
-          // let response = await axios.get(`http://54.163.234.235:3000/getRemider/${idcard}`)
-          setUser(response.data);
-          // console.log("response.data")
-      }
-      catch(error) {
-        console.log('error');
-        console.error(error)
-      }
-    };
-    fetchUsers();
+  useFocusEffect(
+    useCallback(() => {
+      const fetchUsers = async () => {
+            try {
+              const infoUser = await getData()
+                setName(infoUser.firstName+" "+infoUser.lastName)
+                let response = await axios.get(`${baseUrl}/timeToEatMedicineComing/${infoUser.patient_id}`)
+                // let response = await axios.get(`http://54.163.234.235:3000/getRemider/${idcard}`)
+                setUser(response.data);
+                 console.log("test "+response.data.length)
+            }
+            catch(error) {
+              console.log('error');
+              console.error(error)
+            }
+          };
+          fetchUsers();
+    },[])
+  )
+
+  // useFocusEffect(
+  //   useCallback(() => {
+  //   // const url = `https://example.com/api/data`;
+  //   const fetchUsers = async () => {
+  //     try {
+  //       const infoUser = await getData()
+  //         setName(infoUser.firstName+" "+infoUser.lastName)
+  //         let response = await axios.get(`${baseUrl}/timeToEatMedicineComing/${infoUser.patient_id}`)
+  //         // let response = await axios.get(`http://54.163.234.235:3000/getRemider/${idcard}`)
+  //         setUser(response.data);
+  //          console.log("test "+response.data.length)
+  //     }
+  //     catch(error) {
+  //       console.log('error');
+  //       console.error(error)
+  //     }
+  //   };
+  //   fetchUsers();
     
-  }, []);
+  // }), []);
 
   const renderGridItem = ({ item }) => {
     // console.log("test ");
@@ -283,7 +304,11 @@ const Home = ({ navigation }) => {
             </Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.box}>
+          <TouchableOpacity style={styles.box}
+            onPress={() => {
+              Notifications.cancelAllScheduledNotificationsAsync()
+              console.log("cancelAllScheduledNoti")
+            }}>
             <Image
               source={require("../../assets/other.png")}
               style={{ width: "30%", height: "40%" }}
